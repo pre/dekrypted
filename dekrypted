@@ -25,6 +25,24 @@ trap _shutdown TERM INT ERR
 
 DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]:-$0}"; )" &> /dev/null && pwd 2> /dev/null; )";
 
+if [[ -f "$HOME/.dekrypted.env" ]]; then
+  eval $(cat "$HOME/.dekrypted.env")
+fi
+
+DEKRYPTED_MINER_INSTALL_PATH=${DEKRYPTED_MINER_INSTALL_PATH:-/root/dekrypted-miner}
+DEKRYPTED_WALLET=${DEKRYPTED_WALLET:-00B3D4EC5BF02E3D90DA8E6859CBBEB3BDD5CC54AAEEB3BAF1}
+DEKRYPTED_WORKER=${DEKRYPTED_WORKER:-$(hostname)}
+DEKRYPTED_URL=${DEKRYPTED_URL:-bamboo://65.108.201.140:3000}
+DEKRYPTED_BOMB=${DEKRYPTED_BOMB:-1800}
+
+echo """
+export DEKRYPTED_MINER_INSTALL_PATH="$DEKRYPTED_MINER_INSTALL_PATH"
+export DEKRYPTED_WALLET="$DEKRYPTED_WALLET"
+export DEKRYPTED_WORKER="$DEKRYPTED_WORKER"
+export DEKRYPTED_URL="$DEKRYPTED_URL"
+export DEKRYPTED_BOMB="$DEKRYPTED_BOMB"
+""" > $HOME/.dekrypted.env
+
 if [[ "${1:-}" == "run" ]]; then
   cd "$DEKRYPTED_MINER_INSTALL_PATH"
   while true; do
@@ -41,21 +59,6 @@ if [[ "${1:-}" == "run" ]]; then
     sleep 1
   done
 fi
-
-
-DEKRYPTED_MINER_INSTALL_PATH=${DEKRYPTED_MINER_INSTALL_PATH:-/root/dekrypted-miner}
-DEKRYPTED_WALLET=${DEKRYPTED_WALLET:-00B3D4EC5BF02E3D90DA8E6859CBBEB3BDD5CC54AAEEB3BAF1}
-DEKRYPTED_WORKER=${DEKRYPTED_WORKER:-$(hostname)}
-DEKRYPTED_URL=${DEKRYPTED_URL:-bamboo://65.108.201.140:3000}
-DEKRYPTED_BOMB=${DEKRYPTED_BOMB:-1800}
-
-export DEKRYPTED_MINER_INSTALL_PATH
-export DEKRYPTED_BOMB
-
-echo "DEKRYPTED_MINER_INSTALL_PATH=$DEKRYPTED_MINER_INSTALL_PATH"
-echo "DEKRYPTED_WALLET=$DEKRYPTED_WALLET"
-echo "DEKRYPTED_WORKER=$DEKRYPTED_WORKER"
-echo "DEKRYPTED_URL=$DEKRYPTED_URL"
 
 apt-get update
 apt-get install -y screen curl
@@ -123,7 +126,7 @@ case $old_crontab in
     echo "already in crontab"
   ;;
   *)
-    printf "${old_crontab}\n@reboot screen -dmS dekrypted $DIR/$0 run\n" | crontab >/dev/null
+    printf "${old_crontab}\n@reboot screen -dmS dekrypted bash -l -c '$DIR/$0 run'\n" | crontab >/dev/null
   ;;
 esac
 
