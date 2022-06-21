@@ -85,7 +85,7 @@ cat <<EOF > "$DEKRYPTED_MINER_INSTALL_PATH/config.json"
     "_retries": "Specifies how many times miner will try to connect to a specific url until selecting next",
     "retries": 1,
     "_action_after_retries_done": "Set action on what to do after all urls have been retried. Possible values: RETRY (= start again from first url), EXIT (= exits the miner)",
-    "action_after_retries_done": "RETRY",
+    "action_after_retries_done": "SHUTDOWN",
     "periodic_report": {
         "_initial_delay": "Delay in secodns to wait before first Periodic Report",
         "initial_delay": 10,
