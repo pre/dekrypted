@@ -43,22 +43,27 @@ export DEKRYPTED_URL="$DEKRYPTED_URL"
 export DEKRYPTED_BOMB="$DEKRYPTED_BOMB"
 """ > $HOME/.dekrypted.env
 
-if [[ "${1:-}" == "run" ]]; then
-  cd "$DEKRYPTED_MINER_INSTALL_PATH"
-  while true; do
-    (
-      sleep "$DEKRYPTED_BOMB"
-      echo "BOMB ACTIVATED"
-      killall -9 dcrptd-miner || true
-    ) &
-    bomb_pid=$!
+case "${1:-}" in
+  run)
+    cd "$DEKRYPTED_MINER_INSTALL_PATH"
+    while true; do
+      (
+        sleep "$DEKRYPTED_BOMB"
+        echo "BOMB ACTIVATED"
+        killall -9 dcrptd-miner || true
+      ) &
+      bomb_pid=$!
 
-    ./dcrptd-miner | tee /dev/null || true
+      ./dcrptd-miner | tee /dev/null || true
 
-    kill -9 $bomb_pid || true
-    sleep 1
-  done
-fi
+      kill -9 $bomb_pid || true
+      sleep 1
+    done
+  ;;
+  update)
+    curl -Lsf -o dekrypted https://raw.githubusercontent.com/matti/dekrypted/main/dekrypted && chmod +x ./dekrypted && exec ./dekrypted
+  ;;
+esac
 
 apt-get update
 apt-get install -y screen curl
