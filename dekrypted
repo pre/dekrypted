@@ -60,9 +60,6 @@ case "${1:-}" in
       sleep 1
     done
   ;;
-  update)
-    curl -Lsf -o dekrypted https://raw.githubusercontent.com/matti/dekrypted/main/dekrypted && chmod +x ./dekrypted && exec ./dekrypted
-  ;;
 esac
 
 apt-get update
@@ -116,9 +113,6 @@ cat <<EOF > "$DEKRYPTED_MINER_INSTALL_PATH/config.json"
 EOF
 
 cat "$DEKRYPTED_MINER_INSTALL_PATH/config.json"
-
-cmd=
-cmd="screen -dmS dekrypted bash -l -c '$DIR/$0 run'"
 
 if crontab -l; then
   old_crontab=$(crontab -l)
