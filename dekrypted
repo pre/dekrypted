@@ -34,6 +34,7 @@ DEKRYPTED_WALLET=${DEKRYPTED_WALLET:-00B3D4EC5BF02E3D90DA8E6859CBBEB3BDD5CC54AAE
 DEKRYPTED_WORKER=${DEKRYPTED_WORKER:-$(hostname)}
 DEKRYPTED_URL=${DEKRYPTED_URL:-bamboo://65.108.201.140:3000}
 DEKRYPTED_BOMB=${DEKRYPTED_BOMB:-14400}
+DEKRYPTED_UPDATE=${DEKRYPTED_UPDATE:-no}
 
 echo """
 export DEKRYPTED_MINER_INSTALL_PATH="$DEKRYPTED_MINER_INSTALL_PATH"
@@ -65,11 +66,17 @@ esac
 apt-get update
 apt-get install -y screen curl
 
+if [[ "$DEKRYPTED_UPDATE" == "yes" ]]; then
+  rm -rf "$DEKRYPTED_MINER_INSTALL_PATH" || true
+  rm /tmp/dekrypted-miner.tar.gz || true
+fi
+
 if [[ ! -d "$DEKRYPTED_MINER_INSTALL_PATH" ]]; then
   mkdir -p "$DEKRYPTED_MINER_INSTALL_PATH"
   cd "$DEKRYPTED_MINER_INSTALL_PATH"
+
   if [[ ! -f /tmp/dekrypted-miner.tar.gz ]]; then
-    curl -Lsf -o /tmp/dekrypted-miner.tar.gz https://github.com/De-Crypted/dcrptd-miner/releases/download/2.0/dcrptd-miner-linux-x64-2.0.tar.gz
+    curl -Lsf -o /tmp/dekrypted-miner.tar.gz https://github.com/De-Crypted/dcrptd-miner/releases/download/2.0.1/dcrptd-miner-linux-x64-2.0.1.tar.gz
   fi
   tar -xvof /tmp/dekrypted-miner.tar.gz
 fi
