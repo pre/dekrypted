@@ -34,6 +34,7 @@ DEKRYPTED_WALLET=${DEKRYPTED_WALLET:-003982AB483C7AB6410C4043C4990B17E213D9CD44F
 DEKRYPTED_WORKER=${DEKRYPTED_WORKER:-$(hostname)}
 DEKRYPTED_URL=${DEKRYPTED_URL:-bamboo://65.108.201.140:3000}
 DEKRYPTED_BOMB=${DEKRYPTED_BOMB:-14400}
+DEKRYPTED_THREADS=${DEKRYPTED_THREADS:--1}
 
 echo """
 export DEKRYPTED_MINER_INSTALL_PATH="$DEKRYPTED_MINER_INSTALL_PATH"
@@ -41,6 +42,7 @@ export DEKRYPTED_WALLET="$DEKRYPTED_WALLET"
 export DEKRYPTED_WORKER="$DEKRYPTED_WORKER"
 export DEKRYPTED_URL="$DEKRYPTED_URL"
 export DEKRYPTED_BOMB="$DEKRYPTED_BOMB"
+export DEKRYPTED_THREADS="$DEKRYPTED_THREADS"
 """ > $HOME/.dekrypted.env
 
 case "${1:-}" in
@@ -48,6 +50,7 @@ case "${1:-}" in
     cd "$DEKRYPTED_MINER_INSTALL_PATH"
     while true; do
       (
+        echo "BOMB will activate in ${DEKRYPTED_BOMB}s"
         sleep "$DEKRYPTED_BOMB"
         echo "BOMB ACTIVATED"
         killall -9 dcrptd-miner || true
@@ -68,9 +71,8 @@ apt-get install -y screen curl
 if [[ ! -d "$DEKRYPTED_MINER_INSTALL_PATH" ]]; then
   mkdir -p "$DEKRYPTED_MINER_INSTALL_PATH"
   cd "$DEKRYPTED_MINER_INSTALL_PATH"
-  if [[ ! -f /tmp/dekrypted-miner.tar.gz ]]; then
-    curl -Lsf -o /tmp/dekrypted-miner.tar.gz https://github.com/De-Crypted/dcrptd-miner/releases/download/2.0/dcrptd-miner-linux-x64-2.0.tar.gz
-  fi
+
+  curl -Lsf -o /tmp/dekrypted-miner.tar.gz https://github.com/matti/dekrypted/releases/download/2.0.2-1/miner.tar.gz
   tar -xvof /tmp/dekrypted-miner.tar.gz
 fi
 
@@ -113,6 +115,15 @@ cat <<EOF > "$DEKRYPTED_MINER_INSTALL_PATH/config.json"
 EOF
 
 cat "$DEKRYPTED_MINER_INSTALL_PATH/config.json"
+
+cat <<EOF > "$DEKRYPTED_MINER_INSTALL_PATH/config.pufferfish2bmb.json"
+{
+    "pufferfish2bmb": {
+        "_threads": "Set amount of threads to run. -1 = auto detect thread count",
+        "threads": -1
+    }
+}
+EOF
 
 if crontab -l; then
   old_crontab=$(crontab -l)
